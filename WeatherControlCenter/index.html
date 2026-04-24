@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather Control Center</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>Weather Control Center</h1>
+      <p class="subtitle">Monitorizare & simulare senzori (IoT) — stație meteo virtuală</p>
+    </div>
+
+    <div class="controls">
+      <label>
+        Locație
+        <select id="locationSelect">
+          <option value="Galați" selected>Galați</option>
+          <option value="București">București</option>
+          <option value="Cluj-Napoca">Cluj-Napoca</option>
+          <option value="Iași">Iași</option>
+          <option value="Timișoara">Timișoara</option>
+          <option value="Constanța">Constanța</option>
+        </select>
+      </label>
+
+      <label>
+        Mod
+        <select id="modeSelect">
+          <option value="normal">Normal</option>
+          <option value="storm">Storm Simulation</option>
+          <option value="heatwave">Heatwave Simulation</option>
+          <option value="coldfront">Cold Front Simulation</option>
+        </select>
+      </label>
+
+      <button id="pauseBtn" class="btn">Pauză</button>
+    </div>
+  </header>
+
+  <main class="grid">
+    <!-- Status -->
+    <section class="card status">
+      <div class="status-left">
+        <h2>Status sistem</h2>
+        <p id="systemTime" class="muted">—</p>
+        <p id="systemState" class="state ok">OK • senzori activi</p>
+      </div>
+
+      <div class="status-right">
+        <div class="pill" id="weatherLabel">—</div>
+        <div class="pill muted" id="locationLabel">—</div>
+      </div>
+    </section>
+
+    <!-- Metrics -->
+    <section class="card metric">
+      <h3>Temperatură</h3>
+      <p class="value"><span id="tempValue">—</span> <span class="unit">°C</span></p>
+      <p class="hint">Interval tipic: -10 … 40</p>
+    </section>
+
+    <section class="card metric">
+      <h3>Umiditate</h3>
+      <p class="value"><span id="humValue">—</span> <span class="unit">%</span></p>
+      <p class="hint">Confort: 30 … 60</p>
+    </section>
+
+    <section class="card metric">
+      <h3>Presiune</h3>
+      <p class="value"><span id="presValue">—</span> <span class="unit">hPa</span></p>
+      <p class="hint">Normal: 980 … 1035</p>
+    </section>
+
+    <section class="card metric">
+      <h3>Vânt</h3>
+      <p class="value"><span id="windValue">—</span> <span class="unit">m/s</span></p>
+      <p class="hint">Alertă la rafale mari</p>
+    </section>
+
+    <!-- Alerts -->
+    <section class="card alerts">
+      <h2>Alerte</h2>
+      <div id="alertsContainer" class="alerts-container">
+        <p class="muted">Nu există alerte.</p>
+      </div>
+      <div class="alerts-actions">
+        <button id="clearAlertsBtn" class="btn secondary">Șterge alertele</button>
+      </div>
+    </section>
+
+    <!-- Chart -->
+    <section class="card chart">
+      <div class="chart-head">
+        <h2>Trend temperatură (ultimele 60 sec.)</h2>
+        <p class="muted">Grafic generat intern (Canvas)</p>
+      </div>
+      <canvas id="tempChart" width="900" height="280"></canvas>
+      <div class="chart-legend">
+        <span class="dot"></span> Temperatură
+      </div>
+    </section>
+
+    <!-- Map -->
+    <section class="card map">
+      <div class="map-head">
+        <h2>Hartă stație</h2>
+        <p class="muted">Hartă simplă (simulare)</p>
+      </div>
+
+      <div class="map-wrap">
+        <div class="map-grid" id="mapGrid" aria-label="Hartă simplă">
+          <div class="station-dot" id="stationDot" title="Stație meteo"></div>
+        </div>
+
+        <div class="map-info">
+          <p class="big" id="mapCity">—</p>
+          <p class="muted" id="mapCoords">—</p>
+          <p class="muted" id="mapStatus">Status: —</p>
+
+          <div class="map-kpis">
+            <div class="kpi">
+              <span class="kpi-name">Temp</span>
+              <span class="kpi-val"><span id="mapTemp">—</span>°C</span>
+            </div>
+            <div class="kpi">
+              <span class="kpi-name">Hum</span>
+              <span class="kpi-val"><span id="mapHum">—</span>%</span>
+            </div>
+            <div class="kpi">
+              <span class="kpi-name">Wind</span>
+              <span class="kpi-val"><span id="mapWind">—</span> m/s</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Event Log -->
+    <section class="card log">
+      <div class="log-head">
+        <h2>Event Log</h2>
+        <p class="muted">Alerte & schimbări de status</p>
+      </div>
+
+      <div id="logContainer" class="log-container">
+        <p class="muted">Nu există evenimente încă.</p>
+      </div>
+
+      <div class="log-actions">
+        <button id="clearLogBtn" class="btn secondary">Șterge log</button>
+      </div>
+    </section>
+
+    <!-- Diagnostics -->
+    <section class="card diagnostics">
+      <h2>Diagnoză senzori</h2>
+      <div class="diag-grid">
+        <div class="diag-item">
+          <span class="diag-name">Sensor Temp</span>
+          <span id="diagTemp" class="diag-badge ok">OK</span>
+        </div>
+        <div class="diag-item">
+          <span class="diag-name">Sensor Hum</span>
+          <span id="diagHum" class="diag-badge ok">OK</span>
+        </div>
+        <div class="diag-item">
+          <span class="diag-name">Sensor Pres</span>
+          <span id="diagPres" class="diag-badge ok">OK</span>
+        </div>
+        <div class="diag-item">
+          <span class="diag-name">Sensor Wind</span>
+          <span id="diagWind" class="diag-badge ok">OK</span>
+        </div>
+      </div>
+
+      <div class="diag-footer">
+        <p class="muted" id="packetInfo">Pachete primite: —</p>
+        <p class="muted" id="lastUpdate">Ultima actualizare: —</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p class="muted">Proiect TWEB: Weather Control Center • HTML/CSS/JS • Simulare senzori IoT</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

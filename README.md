@@ -80,7 +80,7 @@ Senzorii sunt actualizați **la fiecare secundă** folosind un algoritm de tip *
 
 ---
 
- 📌 Note
+📌 Note
 
 - Aplicația nu consumă date reale — totul este simulat client-side
 - Nu are dependențe externe (fără npm, fără framework-uri, fără CDN)
